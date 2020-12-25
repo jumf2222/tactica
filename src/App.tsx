@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import Controls from './components/Controls/Controls';
+import Timeline from './components/Timeline/Timeline';
+import Toolbar from './components/Toolbar/Toolbar';
+import Workspace from './components/Workspace/Workspace';
+
+let playInterval: NodeJS.Timeout;
 
 function App() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [hierarchy, setHierarchy] = useState([]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      playInterval = setInterval(() => { setCurrentTime(prev => prev + 1); }, 1);
+    } else {
+      clearInterval(playInterval);
+    }
+
+    return () => {
+      clearInterval(playInterval);
+    }
+  }, [isPlaying]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1>tactica</h1>
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <Workspace ></Workspace>
+      <Toolbar></Toolbar>
+      <Controls isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        currentTime={currentTime}
+        setCurrentTime={setCurrentTime}></Controls>
+      <Timeline></Timeline>
     </div>
   );
 }
